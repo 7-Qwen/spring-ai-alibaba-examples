@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.cloud.ai.example.observability.controller;
 
 import org.springframework.ai.image.*;
@@ -59,6 +60,4 @@ public class ImageModelController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
-
-
 }

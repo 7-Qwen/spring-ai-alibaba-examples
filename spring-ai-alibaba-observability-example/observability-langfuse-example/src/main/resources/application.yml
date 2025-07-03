@@ -1,12 +1,10 @@
 spring:
   application:
     name: observability-models-dashscope
+
   ai:
     dashscope:
       api-key: ${AI_DASHSCOPE_API_KEY}
-      observations:
-        log-completion: true
-        log-prompt: true
 
     # spring ai alibaba weather tool calling config
     alibaba:
@@ -21,8 +19,10 @@ spring:
         observations:
           # default value is false.
           log-prompt: true
-          log-completion: true
-          include-error-logging: true
+      observations:
+        log-prompt: true
+        log-completion: true
+        include-error-logging: true
 
     # vector store config items
     vectorstore:
@@ -35,17 +35,13 @@ spring:
         # default value is false.
         include-content: true
 
-    # Image observation is only support openai for spring ai.
-    # image:
-    #   observations:
-    #     log-prompt: true
+    image:
+      observations:
+        log-prompt: true
 
   http:
     client:
       read-timeout: 60s
-
-server:
-  port: 8080
 
 management:
   endpoints:
@@ -54,12 +50,34 @@ management:
         include: "*"
   endpoint:
     health:
-      # 应用健康状态检查，携带详细新学年
+      # health status check with detailed messages
       show-details: always
   tracing:
     sampling:
-      # trace 采样信息，记录每个请求
+      # trace information with every request
       probability: 1.0
-  zipkin:
-    tracing:
-      endpoint: http://localhost:9411/api/v2/spans
+  observations:
+    annotations:
+      enabled: true
+
+otel:
+  service:
+    name: spring-ai-alibaba-graph-langfuse
+  resource:
+    attributes:
+      deployment.environment: development
+  # configure exporter
+  traces:
+    exporter: otlp
+    sampler: always_on
+  metrics:
+    exporter: otlp
+  # logs exportation inhibited for langfuse currently cannot support
+  logs:
+    exporter: none
+  exporter:
+    otlp:
+      endpoint: "https://cloud.langfuse.com/api/public/otel"
+      headers:
+        Authorization: "Basic ${YOUR_BASE64_ENCODED_CREDENTIALS}"
+      protocol: http/protobuf
